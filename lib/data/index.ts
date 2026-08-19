@@ -1,5 +1,10 @@
-import { serverClient } from "../supabase";
+import { serverClient, hasServerEnv } from "../supabase";
 import { LOCAL_USER_ID } from "../config";
+
+/** True when Supabase env is configured. The UI uses this to show a setup hint. */
+export function isConfigured(): boolean {
+  return hasServerEnv();
+}
 
 export type AgendaItem = {
   title: string;
@@ -17,6 +22,7 @@ function startOfTodayISO(): string {
 }
 
 export async function getAgenda(deps: Deps = {}): Promise<AgendaItem[]> {
+  if (!deps.db && !hasServerEnv()) return []; // not configured yet — render empty, don't crash
   const db = deps.db ?? serverClient();
   const { data, error } = await db
     .from("calendar_events")
@@ -29,6 +35,7 @@ export async function getAgenda(deps: Deps = {}): Promise<AgendaItem[]> {
 }
 
 export async function getLastSync(deps: Deps = {}): Promise<LastSync | null> {
+  if (!deps.db && !hasServerEnv()) return null; // not configured yet
   const db = deps.db ?? serverClient();
   const { data, error } = await db
     .from("ingest_runs")

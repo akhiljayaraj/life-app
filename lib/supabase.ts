@@ -1,5 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
+export function hasServerEnv(): boolean {
+  return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY);
+}
+
 export function serverClient() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_KEY;
