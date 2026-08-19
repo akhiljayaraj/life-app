@@ -3,3 +3,16 @@ dist/
 coverage/
 *.log
 .env
+
+# Next.js
+.next/
+
+# local env
+.env*.local
+next-env.d.ts
+
+# build cache
+*.tsbuildinfo
+
+# SDD scratch
+.superpowers/

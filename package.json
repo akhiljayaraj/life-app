@@ -1,23 +1,38 @@
 {
-  "name": "template-app",
+  "name": "life-app",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "next dev",
+    "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run --exclude '**/*.integration.test.ts'",
     "test:integration": "vitest run '**/*.integration.test.ts' || echo 'no integration tests'",
     "test": "vitest run",
-    "build": "tsc -p tsconfig.json"
+    "build": "next build",
+    "ingest": "tsx scripts/ingest-run.ts"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
     "@vitest/coverage-v8": "^2",
     "eslint": "^9",
     "prettier": "^3",
+    "tsx": "^4.23.12",
     "typescript": "^5",
     "typescript-eslint": "^8",
     "vitest": "^2"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.3",
+    "gray-matter": "^4.0.3",
+    "next": "^16.3.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "recharts": "^3.10.1",
+    "zod": "^4.4.3"
   }
 }
