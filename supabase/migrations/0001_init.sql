@@ -70,12 +70,18 @@ create table ingest_runs (
   source text not null,
   started_at timestamptz not null,
   finished_at timestamptz,
-  status text not null,
+  status text not null check (status in ('ok', 'partial', 'error')),
   rows_written int not null default 0,
   error text,
   created_at timestamptz not null default now()
 );
 
+-- RLS posture (v1): enabled as a deny-by-default net for the anon/authenticated
+-- roles, but intentionally WITHOUT policies. This is a single-user, local app that
+-- reads/writes via the service_role key, which bypasses RLS by design. There is no
+-- Supabase Auth (no auth.uid()) in v1, so a policy would have nothing to key on;
+-- user scoping is enforced in application code (every query filters user_id).
+-- Add real per-user policies here if this ever becomes multi-user. See spec §5.
 alter table calendar_events enable row level security;
 alter table tasks enable row level security;
 alter table health_metrics enable row level security;
