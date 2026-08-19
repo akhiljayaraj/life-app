@@ -87,12 +87,39 @@ export function supabaseDbPort(): DbPort {
 
 // CLI: `tsx scripts/write.ts --source calendar` reads a JSON array from stdin.
 if (process.argv[1]?.endsWith("write.ts")) {
+  const sourceArg = process.argv[process.argv.indexOf("--source") + 1];
+  if (sourceArg !== "calendar") {
+    console.error(
+      `unsupported --source: ${sourceArg ?? "(none)"}; only 'calendar' is supported in phase 1`,
+    );
+    process.exit(1);
+  }
   const chunks: Buffer[] = [];
   process.stdin.on("data", (c) => chunks.push(c as Buffer));
   process.stdin.on("end", async () => {
-    const input = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    const port = supabaseDbPort();
+    const raw = Buffer.concat(chunks).toString("utf8");
+    let input: unknown;
     try {
-      const res = await writeCalendarEvents(input, { db: supabaseDbPort() });
+      input = JSON.parse(raw);
+    } catch (e) {
+      // A malformed envelope (not a schema-invalid payload) still gets an error run logged,
+      // so the observability net in spec §8 catches it too.
+      const now = new Date().toISOString();
+      await port.logRun({
+        user_id: LOCAL_USER_ID,
+        source: "gcal",
+        started_at: now,
+        finished_at: now,
+        status: "error",
+        rows_written: 0,
+        error: `invalid JSON on stdin: ${e instanceof Error ? e.message : String(e)}`,
+      });
+      console.error("invalid JSON on stdin");
+      process.exit(1);
+    }
+    try {
+      const res = await writeCalendarEvents(input, { db: port });
       console.log(JSON.stringify(res));
     } catch (e) {
       console.error(e instanceof Error ? e.message : String(e));

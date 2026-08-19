@@ -1,11 +1,19 @@
 "use server";
-import { spawnSync } from "node:child_process";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { revalidatePath } from "next/cache";
 import { getAgenda, getLastSync } from "@/lib/data";
 import { summarize } from "@/lib/ai-engine";
 
+const pExecFile = promisify(execFile);
+
 export async function refresh() {
-  spawnSync("claude", ["-p", "/ingest calendar"], { stdio: "inherit" });
+  try {
+    await pExecFile("claude", ["-p", "/ingest calendar"], { maxBuffer: 10 * 1024 * 1024 });
+  } catch {
+    // Ingest failures are recorded in ingest_runs and surfaced via the "last synced" indicator;
+    // the action still revalidates so the dashboard reflects whatever landed.
+  }
   revalidatePath("/");
 }
 

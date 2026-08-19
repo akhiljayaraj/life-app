@@ -10,12 +10,19 @@ export type AgendaItem = {
 export type LastSync = { source: string; finished_at: string | null; status: string };
 type Deps = { db?: ReturnType<typeof serverClient> };
 
+function startOfTodayISO(): string {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+
 export async function getAgenda(deps: Deps = {}): Promise<AgendaItem[]> {
   const db = deps.db ?? serverClient();
   const { data, error } = await db
     .from("calendar_events")
     .select("title, starts_at, ends_at, location")
     .eq("user_id", LOCAL_USER_ID)
+    .gte("starts_at", startOfTodayISO())
     .order("starts_at", { ascending: true });
   if (error) throw new Error(error.message);
   return (data ?? []) as AgendaItem[];
@@ -27,7 +34,7 @@ export async function getLastSync(deps: Deps = {}): Promise<LastSync | null> {
     .from("ingest_runs")
     .select("source, finished_at, status")
     .eq("user_id", LOCAL_USER_ID)
-    .order("finished_at", { ascending: false })
+    .order("started_at", { ascending: false })
     .limit(1);
   if (error) throw new Error(error.message);
   return (data?.[0] as LastSync) ?? null;
