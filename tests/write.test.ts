@@ -1,20 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { writeCalendarEvents } from "../scripts/write";
+import {
+  writeCalendarEvents,
+  type DbPort,
+  type CalendarRow,
+  type IngestRun,
+} from "../scripts/write";
 
 function fakeDb() {
-  const state = { upserted: [] as any[], runs: [] as any[] };
-  return {
-    state,
-    port: {
-      async upsertCalendarEvents(rows: any[]) {
-        state.upserted.push(...rows);
-        return rows.length;
-      },
-      async logRun(run: any) {
-        state.runs.push(run);
-      },
+  const state = { upserted: [] as CalendarRow[], runs: [] as IngestRun[] };
+  const port: DbPort = {
+    async upsertCalendarEvents(rows) {
+      state.upserted.push(...rows);
+      return rows.length;
+    },
+    async logRun(run) {
+      state.runs.push(run);
     },
   };
+  return { state, port };
 }
 
 describe("writeCalendarEvents", () => {
