@@ -1,8 +1,11 @@
 {
   "mcpServers": {
     "google-calendar": {
-      "type": "http",
-      "url": "https://REPLACE-WITH-YOUR-GOOGLE-CALENDAR-MCP-URL"
+      "command": "npx",
+      "args": ["-y", "@cocal/google-calendar-mcp"],
+      "env": {
+        "GOOGLE_OAUTH_CREDENTIALS": "/Users/akhil/.config/life-app/gcp-oauth.keys.json"
+      }
     }
   }
 }

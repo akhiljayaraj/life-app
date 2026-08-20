@@ -34,11 +34,33 @@ npm run dev      # http://localhost:3000
 Expect: the seeded "Standup" agenda item, a "last synced" line, and Refresh/Generate buttons.
 (The briefing "Generate" needs step 0 working, since it calls `claude -p`.)
 
-## 3. Wire the real Google Calendar connector
-`life-ingest/.mcp.json` has a **placeholder** URL. Replace it with your actual Google
-Calendar MCP connector (likely via `claude mcp add` / the Claude Code connector UI for a
-managed OAuth connector), keeping the server name `google-calendar`. Make sure the
-`life-ingest` plugin is discoverable by Claude Code from the repo root.
+## 3. Wire the Google Calendar connector
+The plugin is configured to use `@cocal/google-calendar-mcp` (local stdio server, headless-
+friendly). You provide a Google OAuth credential once:
+
+**a. Create Google OAuth credentials (~10 min, in Google Cloud Console):**
+1. Create/select a project → enable the **Google Calendar API**.
+2. **APIs & Services → OAuth consent screen**: External; add **your own email as a Test user**.
+   (To avoid weekly token expiry, later click **Publish app** — an unverified-app warning is fine
+   for personal use.)
+3. **Credentials → Create credentials → OAuth client ID → Application type: Desktop app**.
+4. Add scopes `.../auth/calendar` and `.../auth/calendar.events` if prompted.
+5. **Download the JSON** and save it exactly at `~/.config/life-app/gcp-oauth.keys.json`:
+   ```bash
+   mkdir -p ~/.config/life-app && mv ~/Downloads/client_secret_*.json ~/.config/life-app/gcp-oauth.keys.json
+   ```
+
+**b. One-time authorize (opens a browser, caches the token for cron):**
+```bash
+GOOGLE_OAUTH_CREDENTIALS=~/.config/life-app/gcp-oauth.keys.json npx -y @cocal/google-calendar-mcp auth
+```
+
+**c. Make sure Claude Code can see the `life-ingest` plugin** from the repo root (its `.mcp.json`
+lives in `life-ingest/`), then run the ingest in step 4.
+
+*Alternatives if you'd rather skip the Google Cloud setup:* a hosted MCP (Composio / Pipedream /
+Zapier) that manages Google OAuth for you, or the Anthropic-native Google Calendar connector — swap
+the `google-calendar` entry in `life-ingest/.mcp.json` accordingly (keep the server name).
 
 ## 4. First real ingest
 ```
