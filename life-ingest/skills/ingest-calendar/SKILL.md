@@ -5,8 +5,9 @@ description: Fetch today's Google Calendar events and write them to the life-app
 
 # Ingest — Google Calendar
 
-1. Use the `google-calendar` MCP server's `list-events` tool to list events for **today**
-   (local time). `list-calendars` can find the target calendar id if needed (default: `primary`).
+1. Use the `google-calendar` MCP server's `list-events` tool to list events from the **start of
+   today through the next 7 days** (local time) on the `primary` calendar — the dashboard agenda
+   shows today + upcoming, so pull that whole window. `list-calendars` finds calendar ids if needed.
 2. Normalize each event to this exact shape (an array):
    `{ "external_id": <the event's stable id>, "title": <string>, "starts_at": <ISO-8601 UTC>, "ends_at": <ISO-8601 UTC or null>, "location": <string or null>, "raw": <the original event object> }`
    - `external_id` MUST be the calendar event's stable id (so re-runs upsert, not duplicate).
