@@ -52,8 +52,10 @@ friendly). You provide a Google OAuth credential once:
 
 **b. One-time authorize (opens a browser, caches the token for cron):**
 ```bash
-GOOGLE_OAUTH_CREDENTIALS=~/.config/life-app/gcp-oauth.keys.json npx -y @cocal/google-calendar-mcp auth
+GOOGLE_OAUTH_CREDENTIALS=~/.config/life-app/gcp-oauth.keys.json npx -y @cocal/google-calendar-mcp@2.6.2 auth
 ```
+(The version is pinned to `@2.6.2` in `.mcp.json` and here on purpose: this third-party server
+receives your Google OAuth credentials, so upgrade it deliberately after reviewing changes.)
 
 **c. Make sure Claude Code can see the `life-ingest` plugin** from the repo root (its `.mcp.json`
 lives in `life-ingest/`), then run the ingest in step 4.

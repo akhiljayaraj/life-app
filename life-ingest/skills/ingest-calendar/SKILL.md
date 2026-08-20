@@ -21,7 +21,9 @@ description: Fetch today's Google Calendar events and write them to the life-app
 - MCP server: `@cocal/google-calendar-mcp` (local stdio), configured in `life-ingest/.mcp.json`.
   It needs a Google OAuth **Desktop app** credentials JSON at
   `/Users/akhil/.config/life-app/gcp-oauth.keys.json` (path set in `.mcp.json`). One-time auth:
-  `GOOGLE_OAUTH_CREDENTIALS=/Users/akhil/.config/life-app/gcp-oauth.keys.json npx @cocal/google-calendar-mcp auth`
+  `GOOGLE_OAUTH_CREDENTIALS=/Users/akhil/.config/life-app/gcp-oauth.keys.json npx @cocal/google-calendar-mcp@2.6.2 auth`
   (opens a browser; token is cached for headless/cron use afterward). See `docs/MORNING-CHECKLIST.md` §3.
+  The version is pinned (`@2.6.2`) on purpose — this third-party server receives your Google OAuth
+  credentials, so bump it deliberately after reviewing changes, not automatically.
 - Ensure Claude Code is logged in with your **Max subscription** and `ANTHROPIC_API_KEY` is **unset**.
 - The writer needs `SUPABASE_URL` / `SUPABASE_SERVICE_KEY` in the environment (see `.env.example`).

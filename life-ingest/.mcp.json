@@ -2,7 +2,7 @@
   "mcpServers": {
     "google-calendar": {
       "command": "npx",
-      "args": ["-y", "@cocal/google-calendar-mcp"],
+      "args": ["-y", "@cocal/google-calendar-mcp@2.6.2"],
       "env": {
         "GOOGLE_OAUTH_CREDENTIALS": "/Users/akhil/.config/life-app/gcp-oauth.keys.json"
       }
