@@ -8,6 +8,10 @@ on:
     - cron: "0 6 * * 1"
 jobs:
   codeql:
-    uses: __OWNER__/.github/.github/workflows/codeql.yml@v1
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    uses: akhiljayaraj/.github/.github/workflows/codeql.yml@v1
     with:
       languages: javascript-typescript
