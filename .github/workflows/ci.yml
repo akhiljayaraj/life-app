@@ -1,4 +1,4 @@
-# .github/workflows/ci.yml  (replace OWNER at bootstrap time; template ships a placeholder)
+# .github/workflows/ci.yml
 name: CI
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
     branches: [main]
 jobs:
   ci:
-    uses: __OWNER__/.github/.github/workflows/ci.yml@v1
+    uses: akhiljayaraj/.github/.github/workflows/ci.yml@v1
     with:
       language: node
       node-version: "20"
