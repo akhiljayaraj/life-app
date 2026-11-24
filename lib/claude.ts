@@ -20,9 +20,11 @@ export function ingestArgs(source: IngestSource): string[] {
     "-p",
     `/ingest ${source}`,
     "--tools",
-    "Read,Write,Bash,Skill",
+    "Write,Bash,Skill",
+    "--setting-sources",
+    "project",
     "--allowedTools",
-    "Skill",
+    "Skill(ingest-calendar)",
     "Write(./.ingest/**)",
     `Bash(npx tsx scripts/write.ts --source calendar --file ${CALENDAR_FILE})`,
     "mcp__google-calendar__list-events",
@@ -38,14 +40,25 @@ export function briefingArgs(prompt: string): string[] {
   return ["-p", prompt, "--tools", "", "--strict-mcp-config"];
 }
 
-/** Only what the CLI needs to find its login; no database or API keys. */
-export function briefingEnv(env: Record<string, string | undefined> = process.env) {
+const BASE_ENV = ["HOME", "PATH", "USER", "LANG", "TMPDIR"];
+
+function pickEnv(keys: string[], env: Record<string, string | undefined>) {
   const out: Record<string, string> = {};
-  for (const k of ["HOME", "PATH", "USER", "LANG", "TMPDIR"]) {
+  for (const k of keys) {
     const v = env[k];
     if (v) out[k] = v;
   }
   return out as NodeJS.ProcessEnv;
+}
+
+/** Only what the CLI needs to find its login; no database or API keys. */
+export function briefingEnv(env: Record<string, string | undefined> = process.env) {
+  return pickEnv(BASE_ENV, env);
+}
+
+/** As above, plus the credentials the writer needs. */
+export function ingestEnv(env: Record<string, string | undefined> = process.env) {
+  return pickEnv([...BASE_ENV, "SUPABASE_URL", "SUPABASE_SERVICE_KEY"], env);
 }
 
 export async function runBriefing(prompt: string): Promise<string> {
@@ -61,6 +74,7 @@ export async function runBriefing(prompt: string): Promise<string> {
 
 export async function runIngest(source: IngestSource): Promise<void> {
   await pExecFile("claude", ingestArgs(source), {
+    env: ingestEnv(),
     maxBuffer: MAX_BUFFER,
     timeout: 5 * 60_000,
     killSignal: "SIGKILL",
