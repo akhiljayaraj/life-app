@@ -86,7 +86,7 @@ Create `.env.example`:
 ```
 SUPABASE_URL=
 SUPABASE_SERVICE_KEY=
-VAULT_PATH=/Users/akhil/Library/Mobile Documents/iCloud~md~obsidian/Documents/Utilities
+VAULT_PATH=/path/to/your/obsidian-vault
 ```
 Add `.env.local` to `.gitignore`.
 
@@ -855,7 +855,7 @@ Create `deploy/com.life-app.ingest.plist` (runs every 6h; adjust the `WorkingDir
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>Label</key><string>com.life-app.ingest</string>
-  <key>WorkingDirectory</key><string>/Users/akhil/life-app</string>
+  <key>WorkingDirectory</key><string>/path/to/life-app</string>
   <key>ProgramArguments</key>
   <array><string>/bin/zsh</string><string>-lc</string><string>npm run ingest calendar</string></array>
   <key>StartInterval</key><integer>21600</integer>

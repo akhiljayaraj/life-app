@@ -21,7 +21,7 @@ throwaway `claude -p "say ok"` — it should answer without an API key.
 ## 1. Supabase project (structured store)
 1. Create a free project at supabase.com.
 2. Copy `.env.example` → `.env.local` and fill `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`,
-   and `VAULT_PATH` (already pre-filled to your Utilities vault).
+   and `VAULT_PATH` (your Obsidian vault).
 3. Apply the schema: open the Supabase SQL editor and run, in order:
    - `supabase/migrations/0001_init.sql`
    - `supabase/seed.sql`

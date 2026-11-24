@@ -2,6 +2,8 @@
 
 Runs `npm run ingest calendar` every 6 hours.
 
+First set `WorkingDirectory` in the plist to your checkout path.
+
 Install:  `cp deploy/com.life-app.ingest.plist ~/Library/LaunchAgents/ && launchctl load ~/Library/LaunchAgents/com.life-app.ingest.plist`
 Run now:  `launchctl start com.life-app.ingest`
 Logs:     `/tmp/life-app-ingest.log`, `/tmp/life-app-ingest.err`

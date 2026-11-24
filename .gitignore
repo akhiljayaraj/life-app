@@ -16,3 +16,6 @@ next-env.d.ts
 
 # SDD scratch
 .superpowers/
+
+# Ingest handoff (contains personal calendar data)
+.ingest/

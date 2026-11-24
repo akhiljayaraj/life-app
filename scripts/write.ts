@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { parseCalendarEvents } from "../lib/schema";
 import { LOCAL_USER_ID } from "../lib/config";
 import { serverClient } from "../lib/supabase";
@@ -85,7 +86,8 @@ export function supabaseDbPort(): DbPort {
   };
 }
 
-// CLI: `tsx scripts/write.ts --source calendar` reads a JSON array from stdin.
+// CLI: `tsx scripts/write.ts --source calendar` reads a JSON array from
+// `--file <path>` if given, otherwise from stdin.
 if (process.argv[1]?.endsWith("write.ts")) {
   const sourceArg = process.argv[process.argv.indexOf("--source") + 1];
   if (sourceArg !== "calendar") {
@@ -94,11 +96,10 @@ if (process.argv[1]?.endsWith("write.ts")) {
     );
     process.exit(1);
   }
-  const chunks: Buffer[] = [];
-  process.stdin.on("data", (c) => chunks.push(c as Buffer));
-  process.stdin.on("end", async () => {
+  const fileIdx = process.argv.indexOf("--file");
+  const main = async () => {
     const port = supabaseDbPort();
-    const raw = Buffer.concat(chunks).toString("utf8");
+    const raw = readFileSync(fileIdx === -1 ? 0 : process.argv[fileIdx + 1], "utf8");
     let input: unknown;
     try {
       input = JSON.parse(raw);
@@ -113,9 +114,9 @@ if (process.argv[1]?.endsWith("write.ts")) {
         finished_at: now,
         status: "error",
         rows_written: 0,
-        error: `invalid JSON on stdin: ${e instanceof Error ? e.message : String(e)}`,
+        error: `invalid JSON input: ${e instanceof Error ? e.message : String(e)}`,
       });
-      console.error("invalid JSON on stdin");
+      console.error("invalid JSON input");
       process.exit(1);
     }
     try {
@@ -125,5 +126,6 @@ if (process.argv[1]?.endsWith("write.ts")) {
       console.error(e instanceof Error ? e.message : String(e));
       process.exit(1);
     }
-  });
+  };
+  void main();
 }
